@@ -17,7 +17,7 @@ import {
   faLinkedinIn,
 } from "@fortawesome/free-brands-svg-icons";
 import contactHeroImage from "../assets/img/still-valey-MK-2.jpg";
-import axios from "axios";
+import apiClient from "../utils/api";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -80,7 +80,7 @@ export default function Contact() {
     setIsSubmitting(true);
 
     try {
-      const response = await axios.post("http://localhost:7000/contactApi/contactme", formData);
+      const response = await apiClient.post("/contactApi/contactme", formData);
       toast.success(response.data.message, {
         autoClose: 3000,
         hideProgressBar: false,

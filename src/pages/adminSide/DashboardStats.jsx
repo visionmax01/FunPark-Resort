@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { 
   faUsers, faCalendarAlt, faClipboardCheck, 
-  faCheckCircle, faSpinner, faChartLine, faUserPlus
+  faCheckCircle, faSpinner, faUserPlus
 } from "@fortawesome/free-solid-svg-icons";
-import axios from "axios";
+import apiClient from "../../utils/api";
 
 const DashboardStats = () => {
   const [stats, setStats] = useState({
@@ -18,7 +18,7 @@ const DashboardStats = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await axios.get('http://localhost:7000/status/dashboard-stats');
+        const response = await apiClient.get('/status/dashboard-stats');
         setStats({
           ...response.data.stats,
           loading: false,

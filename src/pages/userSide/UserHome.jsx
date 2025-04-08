@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faEnvelope, faPhone, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { toast } from 'react-toastify';
+import apiClient from '../../utils/api';
 
 const UserHome = () => {
     const [user, setUser] = useState(null);
@@ -18,9 +18,7 @@ const UserHome = () => {
                     return;
                 }
 
-                const response = await axios.get('http://localhost:7000/api/user', {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
+                const response = await apiClient.get('/api/user', );
 
                 setUser(response.data.user);
             } catch (error) {

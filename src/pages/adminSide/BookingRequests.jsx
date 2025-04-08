@@ -5,6 +5,7 @@ import ViewBookingPopup from "./ViewBookingPopup";
 import EditBookingPopup from "./EditBookingPopup";
 import ConfirmPopup from "./ConfirmPopup";
 import ExtendStayPopup from "./ExtendStayPopup";
+import { toast } from "react-toastify";
 
 // Status badge component
 const StatusBadge = ({ status }) => {
@@ -60,7 +61,7 @@ const BookingRequests = () => {
           throw new Error('Authentication required. Please login.');
         }
 
-        const res = await fetch("http://localhost:7000/bookApi/bookings", {
+        const res = await fetch("https://funpark-resort-backend.vercel.app/bookApi/bookings", {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -104,7 +105,7 @@ const BookingRequests = () => {
         throw new Error('Authentication required');
       }
 
-      const response = await fetch(`http://localhost:7000/bookApi/bookings/${bookingToConfirm._id}`, {
+      const response = await fetch(`https://funpark-resort-backend.vercel.app/bookApi/bookings/${bookingToConfirm._id}`, {
         method: "PUT",
         headers: { 
           "Content-Type": "application/json",
@@ -123,6 +124,7 @@ const BookingRequests = () => {
           )
         );
         setShowConfirmPopup(false);
+        toast.success("Booking confirmed successfully");
       } else {
         throw new Error(result.message || "Confirmation failed");
       }
@@ -140,7 +142,7 @@ const BookingRequests = () => {
         throw new Error('Authentication required');
       }
 
-      const response = await fetch(`http://localhost:7000/bookApi/bookings/${extendedData._id}`, {
+      const response = await fetch(`https://funpark-resort-backend.vercel.app/bookApi/bookings/${extendedData._id}`, {
         method: "PUT",
         headers: { 
           "Content-Type": "application/json",
@@ -165,6 +167,7 @@ const BookingRequests = () => {
               : booking
           )
         );
+        toast.success("Stay extended successfully");
         setShowExtendStayPopup(false);
       } else {
         throw new Error(result.message || "Failed to extend stay");
@@ -212,7 +215,7 @@ const BookingRequests = () => {
         throw new Error('Authentication required');
       }
 
-      const response = await fetch(`http://localhost:7000/bookApi/bookings/${updatedBooking._id}`, {
+      const response = await fetch(`https://funpark-resort-backend.vercel.app/bookApi/bookings/${updatedBooking._id}`, {
         method: "PUT",
         headers: { 
           "Content-Type": "application/json",
@@ -226,6 +229,7 @@ const BookingRequests = () => {
         setBookings((prev) =>
           prev.map((booking) => (booking._id === updatedBooking._id ? updatedBooking : booking))
         );
+        toast.success("Booking updated successfully");
         setShowEditPopup(false);
       } else {
         throw new Error(result.message || "Update failed");

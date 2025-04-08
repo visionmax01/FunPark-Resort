@@ -10,7 +10,7 @@ import {
   faEnvelope,
   faPhone
 } from '@fortawesome/free-solid-svg-icons';
-import axios from 'axios';
+import apiClient from '../../utils/api';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -26,7 +26,7 @@ import 'react-toastify/dist/ReactToastify.css';
   const fetchContacts = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('http://localhost:7000/contactApi/getcontacts');
+      const response = await apiClient.get('/contactApi/getcontacts');
       setContacts(response.data.data);
       setLoading(false);
     } catch (error) {
@@ -68,7 +68,7 @@ import 'react-toastify/dist/ReactToastify.css';
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this contact?')) {
       try {
-        await axios.delete(`http://localhost:7000/contactApi/deletecontact/${id}`);
+        await apiClient.delete(`/contactApi/deletecontact/${id}`);
         toast.success('Contact deleted successfully');
         fetchContacts();
       } catch (error) {

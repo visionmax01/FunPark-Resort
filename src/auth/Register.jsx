@@ -1,9 +1,9 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState } from 'react';
-import { faUser, faEnvelope, faLock, faVenusMars, faCalendar, faPhone, faMapMarker } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faEnvelope, faLock, faVenusMars, faPhone, faMapMarker } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 import illustrator from '../assets/img/still-valey-MK-3.jpg';
-import axios from 'axios';
+import apiClient from '../utils/api';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -52,7 +52,7 @@ const Register = () => {
     };
 
     try {
-      const response = await axios.post('http://localhost:7000/api/register', userData);
+      const response = await apiClient.post('/api/register', userData);
       setMessage('Registration successful!');
       setError('');
       setFormData({

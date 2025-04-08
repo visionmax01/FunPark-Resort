@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import apiClient from '../utils/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faEnvelope, 
@@ -29,7 +29,7 @@ const ForgotPassword = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const response = await axios.post('http://localhost:7000/api/forgot-password', { email });
+      const response = await apiClient.post('/api/forgot-password', { email });
       setMessage(response.data.message);
       setIsError(false);
       setStep(2);
@@ -46,7 +46,7 @@ const ForgotPassword = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const response = await axios.post('http://localhost:7000/api/verify-otp', { email, otp });
+      const response = await apiClient.post('/api/verify-otp', { email, otp });
       setMessage(response.data.message);
       setIsError(false);
       setResetToken(response.data.resetToken);
@@ -71,7 +71,7 @@ const ForgotPassword = () => {
 
     setIsLoading(true);
     try {
-      await axios.post('http://localhost:7000/api/reset-password', {
+      await apiClient.post('/api/reset-password', {
         userId,
         resetToken,
         newPassword

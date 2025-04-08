@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import apiClient from '../utils/api';
 import { toast } from 'react-toastify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
-  faLock, 
   faSpinner, 
   faKey,
   faEye,
@@ -21,7 +20,14 @@ const ChangePassword = () => {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [email, setEmail] = useState(''); // To store email from OTP response
   const navigate = useNavigate();
+
+  const validatePassword = (password) => {
+    // Minimum 8 characters, at least one letter and one number
+    const re = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    return re.test(password);
+  };
 
   const validateStep1 = () => {
     if (!currentPassword) {
@@ -30,6 +36,10 @@ const ChangePassword = () => {
     }
     if (!newPassword) {
       toast.error('New password is required');
+      return false;
+    }
+    if (!validatePassword(newPassword)) {
+      toast.error('Password must be at least 8 characters with at least one letter and one number');
       return false;
     }
     if (!confirmPassword) {
@@ -44,8 +54,8 @@ const ChangePassword = () => {
   };
 
   const validateStep2 = () => {
-    if (!otp) {
-      toast.error('OTP is required');
+    if (!otp || otp.length !== 6) {
+      toast.error('Please enter a valid 6-digit OTP');
       return false;
     }
     return true;
@@ -56,13 +66,10 @@ const ChangePassword = () => {
 
     setIsLoading(true);
     try {
-      await axios.post('http://localhost:7000/api/request-password-change-otp', {
+      const response = await apiClient.post('/api/request-password-change-otp', {
         currentPassword
-      }, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
       });
+      setEmail(response.data.email); // Store email from response
       setStep(2);
       toast.success('OTP sent to your registered email');
     } catch (error) {
@@ -82,20 +89,25 @@ const ChangePassword = () => {
 
     setIsLoading(true);
     try {
-      await axios.put('http://localhost:7000/api/change-password', {
+      await apiClient.put('/api/change-password', {
         currentPassword,
         newPassword,
         otp
-      }, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
       });
 
       toast.success('Password changed successfully');
       navigate('/user-dashboard');
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Error changing password');
+      if (error.response?.data?.message) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error('Error changing password. Please try again.');
+      }
+      
+      // If OTP is invalid, go back to step 1
+      if (error.response?.status === 400) {
+        setStep(1);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -103,14 +115,14 @@ const ChangePassword = () => {
 
   return (
     <div className="min-h-screen flex justify-center p-4">
-      <div className="w-1/2 h-fit rounded-xl shadow-lg overflow-hidden">
+      <div className="w-full max-w-md h-fit rounded-xl shadow-lg overflow-hidden">
         {/* Header */}
         <div className="p-6 text-center">
           <h2 className="text-2xl font-bold text-[#5b3016]">
             {step === 1 ? 'Change Password' : 'Verify OTP'}
           </h2>
           <p className="text-[#5b3016] mt-1">
-            {step === 1 ? 'Secure your account' : 'Enter verification code'}
+            {step === 1 ? 'Secure your account' : `Enter code sent to ${email || 'your email'}`}
           </p>
         </div>
 
@@ -143,7 +155,7 @@ const ChangePassword = () => {
               </div>
 
               {/* New Password */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4">
                 <div className="space-y-1">
                   <label className="block text-sm font-medium text-[#5b3016]">
                     New Password
@@ -156,7 +168,7 @@ const ChangePassword = () => {
                       required
                       minLength="8"
                       className="w-full px-4 py-2 border border-[#d4a373] rounded-lg focus:ring-2 focus:ring-[#5b3016] focus:border-[#5b3016] outline-none transition-all"
-                      placeholder="New password"
+                      placeholder="New password (min 8 characters)"
                     />
                     <button
                       type="button"
@@ -166,6 +178,9 @@ const ChangePassword = () => {
                       <FontAwesomeIcon icon={showNewPassword ? faEyeSlash : faEye} />
                     </button>
                   </div>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Must be at least 8 characters with at least one letter and one number
+                  </p>
                 </div>
 
                 <div className="space-y-1">
@@ -223,9 +238,15 @@ const ChangePassword = () => {
                   <input
                     type="text"
                     value={otp}
-                    onChange={(e) => setOtp(e.target.value)}
+                    onChange={(e) => {
+                      // Only allow numbers and limit to 6 digits
+                      const value = e.target.value.replace(/\D/g, '').slice(0, 6);
+                      setOtp(value);
+                    }}
                     required
                     maxLength="6"
+                    inputMode="numeric"
+                    pattern="\d{6}"
                     className="w-full px-4 py-2 border border-[#d4a373] rounded-lg focus:ring-2 focus:ring-[#5b3016] focus:border-[#5b3016] outline-none transition-all"
                     placeholder="Enter 6-digit OTP"
                   />
@@ -235,7 +256,7 @@ const ChangePassword = () => {
                   />
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
-                  Check your email for the verification code
+                  Check your email for the 6-digit verification code
                 </p>
               </div>
 

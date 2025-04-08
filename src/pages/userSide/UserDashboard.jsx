@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Routes, Route } from 'react-router-dom';
-import axios from 'axios';
 import { toast } from 'react-toastify';
 import UserHeader from '../../components/UserHeader';
 import UserHome from './UserHome';
 import MyBookings from './MyBookings';
 import UserProfile from '../UserProfile';
 import ChangePassword from '../../auth/ChangePassword';
+import apiClient from '../../utils/api';
 
 const UserDashboard = () => {
     const [user, setUser] = useState(null);
@@ -21,9 +21,7 @@ const UserDashboard = () => {
                     return;
                 }
 
-                const response = await axios.get('http://localhost:7000/api/user', {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
+                const response = await apiClient.get('/api/user', );
 
                 setUser(response.data.user);
                 localStorage.setItem('user', JSON.stringify(response.data.user));

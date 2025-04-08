@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import apiClient from '../utils/api';
 
 const UserProfile = () => {
     const [user, setUser] = useState({ name: '', email: '', phone: '', address: '' });
@@ -14,9 +14,7 @@ const UserProfile = () => {
                 const token = localStorage.getItem('token');
                 if (!token) return navigate('/login');
 
-                const response = await axios.get('http://localhost:7000/api/user', {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
+                const response = await apiClient.get('/api/user',);
 
                 setUser(response.data.user);
                 setIsLoading(false);
@@ -36,9 +34,7 @@ const UserProfile = () => {
     const handleUpdate = async () => {
         try {
             const token = localStorage.getItem('token');
-            await axios.put('http://localhost:7000/api/update', user, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
+            await apiClient.put('/api/update', user,);
 
             toast.success('Profile updated successfully');
             // Check if user role is 1 (admin) or 0 (user) and redirect accordingly

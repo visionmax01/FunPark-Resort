@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -21,6 +20,7 @@ import {
   faTimesCircle,
   faHourglassHalf
 } from '@fortawesome/free-solid-svg-icons';
+import apiClient from '../../utils/api';
 
 const MyBookings = () => {
   const [bookings, setBookings] = useState([]);
@@ -42,12 +42,7 @@ const MyBookings = () => {
       try {
         if (!checkAuth()) return;
 
-        const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:7000/bookApi/my-bookings', {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
+        const response = await apiClient.get('/bookApi/my-bookings');
 
         const sortedBookings = response.data.map(booking => ({
           ...booking,

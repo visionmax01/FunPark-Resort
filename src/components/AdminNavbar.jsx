@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faSignOutAlt, faBell, faUser } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import apiClient from '../utils/api';
 import Logo from '../assets/img/main-logoo.jpg';
 
 const AdminNavbar = ({ toggleSidebar }) => {
@@ -16,9 +16,7 @@ const AdminNavbar = ({ toggleSidebar }) => {
     // Fetch user data
     const token = localStorage.getItem('token');
     if (token) {
-      axios.get('http://localhost:7000/api/user', {
-        headers: { Authorization: `Bearer ${token}` }
-      })
+      apiClient.get('/api/user', )
       .then(response => {
         setUserData(response.data.user);
       })
@@ -36,8 +34,7 @@ const AdminNavbar = ({ toggleSidebar }) => {
   }, []);
 
   const fetchUnseenContacts = () => {
-    axios.get('http://localhost:7000/contactApi/unseen', {
-      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+    apiClient.get('/contactApi/unseen', {
     })
     .then(response => {
       setUnseenCount(response.data.count);
@@ -57,8 +54,7 @@ const AdminNavbar = ({ toggleSidebar }) => {
     setShowNotifications(!showNotifications);
     if (unseenCount > 0) {
       // Mark notifications as seen
-      axios.put('http://localhost:7000/contactApi/mark-seen', {}, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      apiClient.put('/contactApi/mark-seen', {}, {
       })
       .then(() => {
         setUnseenCount(0);

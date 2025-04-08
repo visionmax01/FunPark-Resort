@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faTachometerAlt, 
@@ -10,6 +9,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import AdminNavbar from '../components/AdminNavbar';
 import { useNavigate, Outlet, useLocation, Link } from 'react-router-dom';
+import apiClient from '../utils/api';
 
 const AdminDashboard = () => {
   const [userData, setUserData] = useState({ name: '', email: '' });
@@ -26,9 +26,7 @@ const AdminDashboard = () => {
           navigate('/login');
           return;
         }
-        const response = await axios.get('http://localhost:7000/api/user', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await apiClient.get('/api/user', );
         setUserData(response.data.user);
       } catch (error) {
         console.error('Error fetching user data:', error);

@@ -6,8 +6,8 @@ import {
   faHome, faTicket, faQrcode, faMoneyBillWave,
   faSpinner, faExclamationCircle, faCheckCircle
 } from "@fortawesome/free-solid-svg-icons";
-import axios from "axios";
-import { toast } from "react-toastify";
+import  { toast } from "react-toastify";
+import apiClient from "../utils/api";
 
 const BookingModal = ({ isOpen, onClose }) => {
   // Form state
@@ -76,11 +76,7 @@ const BookingModal = ({ isOpen, onClose }) => {
 
       setIsLoadingUser(true);
       try {
-        const response = await axios.get("http://localhost:7000/api/user", {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
+        const response = await apiClient.get("/api/user");
         setUser(response.data.user);
         
         // Pre-fill form with user data
@@ -157,15 +153,9 @@ const BookingModal = ({ isOpen, onClose }) => {
 
     try {
       // Create booking
-      const bookingResponse = await axios.post(
-        "http://localhost:7000/bookApi/bookings",
-        bookingData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-          }
-        }
+      const bookingResponse = await apiClient.post(
+        "/bookApi/bookings",
+        bookingData
       );
 
       // Handle QR payment verification
@@ -177,12 +167,11 @@ const BookingModal = ({ isOpen, onClose }) => {
           formData.append('screenshot', screenshot);
         }
 
-        await axios.post(
-          "http://localhost:7000/bookApi/verify-payment",
+        await apiClient.post(
+          "/bookApi/verify-payment",
           formData,
           {
             headers: {
-              "Authorization": `Bearer ${token}`,
               "Content-Type": "multipart/form-data"
             }
           }
